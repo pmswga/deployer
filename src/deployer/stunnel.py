@@ -8,6 +8,8 @@ from .service import Service, ServiceException, ServiceValueError, ServiceVerify
 
 # Sub types
 class StunnelValueRange:
+    """Stunnel config acceptable values"""
+
     FACILITY = (
         "emerg",
         "alert",
@@ -26,11 +28,7 @@ class StunnelValueRange:
 
 @dataclass
 class StunnelService:
-    """Stunnel service config representation
-
-    Returns:
-        _type_: _description_
-    """
+    """Stunnel service config representation"""
 
     name: str = ""
     client: Literal["yes", "no"] = "yes"
@@ -45,6 +43,12 @@ class StunnelService:
     cert: str = ""
 
     def __str__(self) -> str:
+        """Render config section in the config
+
+        Returns:
+            str: string representation of the config section
+        """
+
         string = []
         string.append(f"[{self.name}]")
 
@@ -59,9 +63,9 @@ class StunnelService:
 
 
 class Stunnel(Service):
-    """Stunnel service class representation
+    """Stunnel service
 
-    Additional links:
+    Additional link:
         https://www.stunnel.org/config_unix.html
 
     Args:
@@ -104,6 +108,9 @@ class Stunnel(Service):
         for k, v in kwargs.items():
             if k in self._config.keys():
                 self._config[k] = v
+
+        # Set default config file name
+        self._config_filename = "stunnel.conf"
 
     def verify(self) -> list[ServiceVerifyMessage]:
         messages = []
@@ -196,6 +203,13 @@ class Stunnel(Service):
         return messages
 
     def addService(self, **kwargs) -> None:
+        """Add stunnel service to the config
+
+        Raises:
+            ServiceValueError
+            ServiceException
+        """
+
         service = StunnelService()
 
         if "name" not in kwargs.keys() or kwargs.get("name") == "":
@@ -211,15 +225,39 @@ class Stunnel(Service):
             raise ServiceException(f"Service '{service.name}' is duplicated")
 
     def getService(self, name: str) -> StunnelService | None:
+        """Get service by name
+
+        Args:
+            name (str): name of service
+
+        Returns:
+            StunnelService | None: service
+        """
         return self._config["services"].get(name)
 
     def removeService(self, name: str) -> None:
+        """Remove service from the config
+
+        Args:
+            name (str): _description_
+        """
         self._config["service"].pop(name)
 
     def services(self) -> list:
+        """Get a list of services
+
+        Returns:
+            list: list of stunnel
+        """
         return self._config["services"]
 
     def __str__(self) -> str:
+        """Render stunnel config
+
+        Returns:
+            str: string representation of the config
+        """
+
         string = []
 
         # Render global params
