@@ -9,9 +9,9 @@ A service is an entity that has:
 - data
 - configuration file name
 
-Configuration actions:
+Service actions:
 
-- create/edit/delete
+- manage service like a object
 - check configuration values
 - save configuration file
 
